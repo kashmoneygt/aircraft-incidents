@@ -1,7 +1,8 @@
-function createChart1(data, context) {
+function createChart1(context) {
 
     console.log('in chart 1');
-    console.log(data);
+
+    var data = context.data;
 
     let phaseCounts = {};
     data.forEach(d => {
@@ -25,10 +26,11 @@ function createChart1(data, context) {
     let chart1svg = d3.select("#chart1svg");
 
     var phases = ["planeStanding", "planeTaxi", "planeTakeoff", "planeClimb", "planeCruise", "planeDescent", "planeApproach", "planeLanding"];
+    var phasesAxis = ["Standing", "Taxi", "Takeoff", "Climb", "Cruise", "Descent", "Approach", "Landing"];
 
     let numPhases = 8;
-    let startPosX = 25;
-    let startPosY = height - 50;
+    let startPosX = 30;
+    let startPosY = height - 75;
     let planeSpacingX = width / 8;
     let planeSpacingY = height / 6;
 
@@ -52,15 +54,27 @@ function createChart1(data, context) {
 
     }
 
-    // 4 phases
+    var x = d3.scale.ordinal()
+        .domain(phasesAxis)
+        .rangePoints([30, width - 40]);
 
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
 
+    chart1svg.append('g')
+        .attr('class', 'x axis')
+        .attr("transform", "translate(0," + (height - 25) + ")")
+        .call(xAxis);
+
+    console.log(data);
+    console.log(context);
 
 
 }
 
 
 // Function that will be called when selected data is updated
-function updateChart1(data, context){
+function updateChart1(context) {
 
 }
