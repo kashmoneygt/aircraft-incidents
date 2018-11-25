@@ -16,6 +16,8 @@ $( document ).ready(function() {
         // Create the time bar with a brush.
         createTimeBar(data);
 
+        createChart1(data);
+
     })
 
 
@@ -28,7 +30,7 @@ function preprocessData(d){
 
 function createTimeBar(data){
 
-    let margin ={top: 30, right: 30, bottom: 30, left: 30} // Adjusts padding from edge of svg frame
+    let margin ={top: 30, right: 30, bottom: 30, left: 40} // Adjusts padding from edge of svg frame
 
     // Adjust time bar height and width
     let timebar_div_j = $("#timebar");
