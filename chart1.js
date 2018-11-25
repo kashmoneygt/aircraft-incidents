@@ -1,4 +1,4 @@
-function createChart1(data) {
+function createChart1(data, context) {
 
     console.log('in chart 1');
     console.log(data);
@@ -56,5 +56,11 @@ function createChart1(data) {
 
 
 
+
+}
+
+
+// Function that will be called when selected data is updated
+function updateChart1(data, context){
 
 }

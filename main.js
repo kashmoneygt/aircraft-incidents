@@ -1,6 +1,12 @@
 $( document ).ready(function() {
     console.log( "Document loaded." );
 
+    context = {
+        startYear: -Infinity,
+        endYear: +Infinity,
+        data: undefined
+    }
+
 
     d3.csv("aircraft_incidents.csv", function(d) {
         // Preprocess loaded data
@@ -9,14 +15,20 @@ $( document ).ready(function() {
         console.log("Aircraft data loaded.");
 
         // Create the time bar with a brush.
+        context.data = data;
         createTimeBar(data);
-
-        createChart1(data);
+        createChart1(data, context);
+        
 
     })
 
 
 });
+
+// Updates all linked charts dependant on the time bar
+function updateVis(data, context){
+    updateChart1(data, context); // Update the first chart. Pass in unfiltered data, and a context with date range to filter by.
+}
 
 function preprocessData(d){
     d.Event_Date = new Date(d.Event_Date); // Convert event date from string to date object
@@ -25,7 +37,7 @@ function preprocessData(d){
 
 function createTimeBar(data){
 
-    let margin ={top: 30, right: 30, bottom: 30, left: 30} // Adjusts padding from edge of svg frame
+    let margin ={top: 30, right: 30, bottom: 30, left: 40} // Adjusts padding from edge of svg frame
 
     // Adjust time bar height and width
     let timebar_div_j = $("#timebar");
@@ -42,15 +54,13 @@ function createTimeBar(data){
     let timechart_top = margin.top;
     let timechart_bottom = margin.top+timechart_height;
 
-    xScale = d3.scale.ordinal().rangeBands([0, timechart_width]);
-    let xDomain = Array.from(new Set(data.map((d) => d.Event_Date.getFullYear()))).sort();
+    let xScale = d3.scale.ordinal().rangeBands([0, timechart_width]);
+    xDomain = Array.from(new Set(data.map((d) => d.Event_Date.getFullYear()))).sort();
     xScale.domain(xDomain);
-    console.log(xDomain);
-    console.log(xScale(2000));
 
 
     
-     yScale = d3.scale.linear().range([0, timechart_height]);
+    let yScale = d3.scale.linear().range([0, timechart_height]);
     let yearCounts = {};
     data.forEach(d => {
         let year = d.Event_Date.getFullYear()
@@ -67,7 +77,9 @@ function createTimeBar(data){
     // console.log(yScale(14))
 
 
-    let bars = d3.select("#timebars");
+    bars = d3.select("#timebars");
+
+    
 
     let yAxis = d3.svg.axis().scale(yScale).orient('left');
     bars.append('g')
@@ -93,6 +105,9 @@ function createTimeBar(data){
             // yAxis using D3.
             .call(xAxis);
 
+
+
+
     bars.append('g')
             .attr('id', 'timebar_bars')
             .attr('transform', function(d,i){
@@ -117,8 +132,67 @@ function createTimeBar(data){
                 return xScale(year)
             })
             .attr("class", "timebar");
+        
+
+    // define brush and limit its size
+    brush = d3.svg.brush().extent([[timechart_left, timechart_bottom],[timechart_right, timechart_top]]);
+
+    // 1D brush
+    brushX = xScale
+
+    brush.x(brushX)
+
+    brush
+    .on("brushstart", brushstart)   // when mousedown&dragging starts 
+    .on("brush", brushing)          // when dragging
+    .on("brushend", brushend);      // when mouseup
+    
+
+    // 3. bind brush to DOM
+    bars.append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .attr('transform', function(d,i){
+        let translate = [timechart_left, timechart_top];
+        return "translate("+ translate +")";
+    })
+    .selectAll("rect")
+    .attr("y", 0)
+    .attr("height", timechart_height);
 
 
+
+}
+
+function brushstart(){
+    // Reset ranges
+    context.startYear = Infinity;
+    context.endYear = -Infinity;
+}
+
+function brushing(){
+    let e = brush.extent();         // coordinates of brushed area: 
+
+    bars.selectAll('rect').classed("brushed", function(year) {
+        let yearStartX = brushX(year); // Start X coord of year bar in question
+        let yearEndX = yearStartX + brushX(xDomain[1]);
+        let yearMidX = (yearStartX+yearEndX)/2; // End X of year bar in question
+        let toBrush = (e[0] <= yearStartX && e[1] >= yearMidX) || (e[0] <= yearMidX && e[1] >= yearEndX); // Brush if majority of area is within extent
+        
+        if(toBrush){
+            context.startYear = Math.min(context.startYear, year);
+            context.endYear = Math.max(context.endYear, year);
+        }
+        return toBrush;
+    });
+
+    updateVis(context.data, context); // Update all visualizations
+
+    
+
+}
+
+function brushend(){
 
 
 }

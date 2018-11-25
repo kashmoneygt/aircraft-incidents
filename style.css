@@ -1,19 +1,16 @@
-/* #chart1 {
-    float:left;
-}
-#chart2{
-    float:left;
-}
-#chart3 {
-    float: left;
-}
-#chart4{
-    float:left;
-} */
-
 .timebar {
     fill: aqua;
     stroke: black;
 }
 
-* { border: 1px solid black; }
+.brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+  }
+
+.brushed {
+    fill: rgb(255, 115, 0);
+}
+
+svg { border: 1px solid black; }
