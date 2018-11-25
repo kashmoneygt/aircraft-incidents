@@ -3,7 +3,8 @@ $( document ).ready(function() {
 
     context = {
         startYear: -Infinity,
-        endYear: +Infinity
+        endYear: +Infinity,
+        data: undefined
     }
 
 
@@ -14,14 +15,20 @@ $( document ).ready(function() {
         console.log("Aircraft data loaded.");
 
         // Create the time bar with a brush.
+        context.data = data;
         createTimeBar(data);
-
-        createChart1(data);
+        createChart1(data, context);
+        
 
     })
 
 
 });
+
+// Updates all linked charts dependant on the time bar
+function updateVis(data, context){
+    updateChart1(data, context); // Update the first chart. Pass in unfiltered data, and a context with date range to filter by.
+}
 
 function preprocessData(d){
     d.Event_Date = new Date(d.Event_Date); // Convert event date from string to date object
@@ -178,6 +185,8 @@ function brushing(){
         }
         return toBrush;
     });
+
+    updateVis(context.data, context); // Update all visualizations
 
     
 
