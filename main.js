@@ -11,6 +11,8 @@ $( document ).ready(function() {
         // Create the time bar with a brush.
         createTimeBar(data);
 
+        createChart1(data);
+
     })
 
 

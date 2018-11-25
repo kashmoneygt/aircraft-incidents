@@ -15,3 +15,5 @@
     fill: aqua;
     stroke: black;
 }
+
+* { border: 1px solid black; }
