@@ -34,14 +34,21 @@ function createTimeBar(data){
     timebarsvg_j.height(height); 
 
     let timechart_width = width - margin.right - margin.left;
-
-    let xScale = d3.scale.linear().range([0, timechart_width]);
-    xScale.domain(data.map((d) => d.Event_Date.getFullYear()));
-
-
     let timechart_height = height - margin.top - margin.bottom
-    let yScale = d3.scale.linear().range([0, timechart_height]);
+    let timechart_left = margin.left;
+    let timechart_right = margin.left+timechart_height;
+    let timechart_top = margin.top;
+    let timechart_bottom = margin.top+timechart_height;
 
+    let xScale = d3.scale.ordinal().rangeBands([0, timechart_width]);
+    let xDomain = Array.from(new Set(data.map((d) => d.Event_Date.getFullYear()))).sort();
+    xScale.domain(xDomain);
+    console.log(xDomain);
+    console.log(xScale(2000));
+
+
+    
+     yScale = d3.scale.linear().range([0, timechart_height]);
     let yearCounts = {};
     data.forEach(d => {
         let year = d.Event_Date.getFullYear()
@@ -51,7 +58,7 @@ function createTimeBar(data){
             yearCounts[year] += 1;
         }
     });
-    // console.log(yearCounts);
+    console.log(yearCounts);
 
     yScale.domain([0, d3.max(Object.keys(yearCounts).map((year) => yearCounts[year]))].reverse()); // Set domain to min and max values of accidents in year resolution
     yScale.nice(); // Make it nice
@@ -60,17 +67,48 @@ function createTimeBar(data){
 
     let bars = d3.select("#timebars");
 
-    var yAxis = d3.svg.axis().scale(yScale).orient('left');
+    let yAxis = d3.svg.axis().scale(yScale).orient('left');
     bars.append('g')
-            .attr('class', 'y axis')
+            .attr('class', 'y_axis')
             .attr('transform', function(d, i){
-                let translate = [margin.left, margin.top];
+                let translate = [timechart_left, timechart_top];
                 return "translate("+ translate +")";
             })
             // Call is a special method that lets us invoke a function
             // (called 'yAxis' in this case) which creates the actual
             // yAxis using D3.
             .call(yAxis);
+
+    let xAxis = d3.svg.axis().scale(xScale).orient('bottom');
+    bars.append('g')
+            .attr('class', 'x_axis')
+            .attr('transform', function(d, i){
+                let translate = [timechart_left, timechart_bottom];
+                return "translate("+ translate +")";
+            })
+            // Call is a special method that lets us invoke a function
+            // (called 'yAxis' in this case) which creates the actual
+            // yAxis using D3.
+            .call(xAxis);
+
+    bars.append('g')
+            .attr('id', 'timebar_bars')
+            .attr('transform', function(d,i){
+                let translate = [timechart_left, timechart_top];
+                return "translate("+ translate +")";
+            })
+            .selectAll("circle")
+            .data(Object.keys(yearCounts))
+            .enter()
+            .append("rect")
+            .attr("height", function(year) {
+                return yearCounts[year];
+            })
+            .attr("width", 50)
+            .attr("y", function(year){
+                return yScale(yearCounts[year]);
+            })
+
 
 
 
