@@ -40,7 +40,7 @@ function createTimeBar(data){
     let timechart_top = margin.top;
     let timechart_bottom = margin.top+timechart_height;
 
-    let xScale = d3.scale.ordinal().rangeBands([0, timechart_width]);
+    xScale = d3.scale.ordinal().rangeBands([0, timechart_width]);
     let xDomain = Array.from(new Set(data.map((d) => d.Event_Date.getFullYear()))).sort();
     xScale.domain(xDomain);
     console.log(xDomain);
@@ -97,17 +97,24 @@ function createTimeBar(data){
                 let translate = [timechart_left, timechart_top];
                 return "translate("+ translate +")";
             })
-            .selectAll("circle")
+            .selectAll()
             .data(Object.keys(yearCounts))
             .enter()
             .append("rect")
             .attr("height", function(year) {
-                return yearCounts[year];
+                return timechart_height - yScale(yearCounts[year]);
             })
-            .attr("width", 50)
+            .attr("width", function(year){
+                let years = Object.keys(yearCounts);
+                return xScale(years[1]) - xScale(years[0]); // Widths are distances between consecutive bars
+            })
             .attr("y", function(year){
                 return yScale(yearCounts[year]);
             })
+            .attr("x", function(year) {
+                return xScale(year)
+            })
+            .attr("class", "timebar");
 
 
 

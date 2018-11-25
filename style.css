@@ -10,3 +10,8 @@
 #chart4{
     float:left;
 } */
+
+.timebar {
+    fill: aqua;
+    stroke: black;
+}
