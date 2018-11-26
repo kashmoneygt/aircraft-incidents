@@ -18,6 +18,7 @@ $( document ).ready(function() {
         context.data = data;
         createTimeBar(data);
         createChart1(context);
+        createChart3(context);
         
 
     })
@@ -169,8 +170,8 @@ function createTimeBar(data){
 
 function brushstart(){
     // Reset ranges
-    context.startYear = -Infinity;
-    context.endYear = +Infinity;
+    context.startYear = Infinity;
+    context.endYear = -Infinity;
 }
 
 function brushing(){
@@ -183,8 +184,8 @@ function brushing(){
         let toBrush = (e[0] <= yearStartX && e[1] >= yearMidX) || (e[0] <= yearMidX && e[1] >= yearEndX); // Brush if majority of area is within extent
         
         if(toBrush){
-            context.startYear = context.startYear == -Infinity ? year : Math.min(context.startYear, year);
-            context.endYear = context.endYear == +Infinity ? year : Math.max(context.endYear, year);
+            context.startYear = Math.min(context.startYear, year);
+            context.endYear = Math.max(context.endYear, year);
         }
         return toBrush;
     });
