@@ -26,8 +26,11 @@ $( document ).ready(function() {
 });
 
 // Updates all linked charts dependant on the time bar
-function updateVis(data, context){
-    updateChart1(data, context); // Update the first chart. Pass in unfiltered data, and a context with date range to filter by.
+function updateVis(context){
+    context.data = context.data.filter(function(d) {
+        return d.Event_Date.getFullYear() >= context.startYear && d.Event_Date.getFullYear() <= context.endYear;
+    });
+    updateChart1(context); // Update the first chart. Pass in unfiltered data, and a context with date range to filter by.
 }
 
 function preprocessData(d){
@@ -186,7 +189,7 @@ function brushing(){
         return toBrush;
     });
 
-    updateVis(context.data, context); // Update all visualizations
+    updateVis(context); // Update all visualizations
 
     
 
