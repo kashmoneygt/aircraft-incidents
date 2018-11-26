@@ -1,20 +1,7 @@
+var phases = ["Standing", "Taxi", "Takeoff", "Climb", "Cruise", "Descent", "Approach", "Landing"];
+
 function createChart1(context) {
-
-    console.log('in chart 1');
-
-    var data = context.data;
-
-    let phaseCounts = {};
-    data.forEach(d => {
-        let phase = d.Broad_Phase_of_Flight
-        if (phaseCounts[phase] === undefined) {
-            phaseCounts[phase] = 1;
-        } else {
-            phaseCounts[phase] += 1;
-        }
-    });
-
-    console.log(phaseCounts);
+    console.log('chart 1');
 
     let chart1_j = $("#chart1");
     let chart1svg_j = $("#chart1svg");
@@ -24,9 +11,6 @@ function createChart1(context) {
     chart1svg_j.height(height); 
 
     let chart1svg = d3.select("#chart1svg");
-
-    var phases = ["planeStanding", "planeTaxi", "planeTakeoff", "planeClimb", "planeCruise", "planeDescent", "planeApproach", "planeLanding"];
-    var phasesAxis = ["Standing", "Taxi", "Takeoff", "Climb", "Cruise", "Descent", "Approach", "Landing"];
 
     let numPhases = 8;
     let startPosX = 30;
@@ -46,16 +30,14 @@ function createChart1(context) {
         startPosX += planeSpacingX;
 
         chart1svg.append("path")
-            .attr("class", phases[i - 1])
-            .attr("d", planeAttr)
-            // .attr("transform-origin", "50% 50%")
-            // .attr("transform", 'rotate(-45)')
-            ;
+            .attr("id", "plane" + phases[i - 1])
+            .attr("class", "plane")
+            .attr("d", planeAttr);
 
     }
 
     var x = d3.scale.ordinal()
-        .domain(phasesAxis)
+        .domain(phases)
         .rangePoints([30, width - 40]);
 
     var xAxis = d3.svg.axis()
@@ -67,14 +49,71 @@ function createChart1(context) {
         .attr("transform", "translate(0," + (height - 25) + ")")
         .call(xAxis);
 
-    console.log(data);
-    console.log(context);
 
+    var data = context.data;
 
+    let phaseCounts = {};
+    data.forEach(d => {
+        let phase = d.Broad_Phase_of_Flight;
+        if (phases.includes(phase.toProperCase())) {
+            if (phaseCounts[phase] === undefined) {
+                phaseCounts[phase] = 1;
+            } else {
+                phaseCounts[phase] += 1;
+            }
+        }
+    });
+
+    let totalCrashes = 0;
+    for (phase in phaseCounts) {
+        totalCrashes += phaseCounts[phase];
+    }
+
+    for (var phase in phaseCounts) {
+        var phaseId = "#plane" + phase.toProperCase();
+        var rgb = valueToRgb(phaseCounts[phase], totalCrashes);
+
+        d3.select(phaseId)
+            .attr("fill", rgb);
+    }
 }
 
 
 // Function that will be called when selected data is updated
 function updateChart1(context) {
+    console.log('update chart 1');
 
+    var data = context.data;
+
+    let phaseCounts = {};
+    data.forEach(d => {
+        let phase = d.Broad_Phase_of_Flight;
+        if (phases.includes(phase.toProperCase())) {
+            if (phaseCounts[phase] === undefined) {
+                phaseCounts[phase] = 1;
+            } else {
+                phaseCounts[phase] += 1;
+            }
+        }
+    });
+
+    let totalCrashes = 0;
+    for (phase in phaseCounts) {
+        totalCrashes += phaseCounts[phase];
+    }
+
+    for (var phase in phaseCounts) {
+        var phaseId = "#plane" + phase.toProperCase();
+        var rgb = valueToRgb(phaseCounts[phase], totalCrashes);
+
+        d3.select(phaseId)
+            .attr("fill", rgb);
+    }
+
+    // console.log(phaseCounts);
+    // console.log(totalCrashes);
 }
+
+String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
