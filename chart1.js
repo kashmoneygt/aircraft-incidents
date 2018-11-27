@@ -63,14 +63,17 @@ function createChart1(context) {
         }
     });
 
-    let totalCrashes = 0;
-    for (phase in phaseCounts) {
-        totalCrashes += phaseCounts[phase];
-    }
+    // let totalCrashes = 0;
+    // for (phase in phaseCounts) {
+    //     totalCrashes += phaseCounts[phase];
+    // }
 
+    let maxval = Object.values(phaseCounts).reduce((prev, l) => Math.max(prev, l), -Infinity)
+    let minval = Object.values(phaseCounts).reduce((prev, l) => Math.min(prev, l), +Infinity)
+    
     for (var phase in phaseCounts) {
         var phaseId = "#plane" + phase.toProperCase();
-        var rgb = valueToRgb(phaseCounts[phase], totalCrashes);
+        var rgb = valueToRgb(phaseCounts[phase], minval, maxval);
 
         d3.select(phaseId)
             .attr("fill", rgb);
@@ -96,14 +99,13 @@ function updateChart1(context) {
         }
     });
 
-    let totalCrashes = 0;
-    for (phase in phaseCounts) {
-        totalCrashes += phaseCounts[phase];
-    }
-
+    
+    let maxval = Object.values(phaseCounts).reduce((prev, l) => Math.max(prev, l), -Infinity)
+    let minval = Object.values(phaseCounts).reduce((prev, l) => Math.min(prev, l), +Infinity)
+    
     for (var phase in phaseCounts) {
         var phaseId = "#plane" + phase.toProperCase();
-        var rgb = valueToRgb(phaseCounts[phase], totalCrashes);
+        var rgb = valueToRgb(phaseCounts[phase], minval, maxval);
 
         d3.select(phaseId)
             .attr("fill", rgb);

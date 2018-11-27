@@ -4,7 +4,8 @@ $( document ).ready(function() {
     context = {
         startYear: -Infinity,
         endYear: +Infinity,
-        data: undefined
+        data: undefined,
+        original_data: undefined
     }
 
 
@@ -16,6 +17,7 @@ $( document ).ready(function() {
 
         // Create the time bar with a brush.
         context.data = data;
+        context.original_data = data;
         createTimeBar(data);
         createChart1(context);
         createChart2(context);
@@ -29,10 +31,13 @@ $( document ).ready(function() {
 
 // Updates all linked charts dependant on the time bar
 function updateVis(context){
-    context.data = context.data.filter(function(d) {
+    console.log("Context before", context)
+    context.data = context.original_data.filter(function(d) {
         return d.Event_Date.getFullYear() >= context.startYear && d.Event_Date.getFullYear() <= context.endYear;
     });
-    updateChart1(context); // Update the first chart. Pass in unfiltered data, and a context with date range to filter by.
+    console.log("Context after", context);
+    updateChart1(context); // Update the first chart. Pass in current context
+    updateChart2(context);
 }
 
 function preprocessData(d){
@@ -202,8 +207,27 @@ function brushend(){
 
 }
 
-function valueToRgb(value, maxValue) {
-    var linear = value / maxValue * (255 * 2) - 255;
-    if (linear >= 0) return rgb(linear, 0, 0);
-    return "rgb(0, 0, " + Math.abs(linear) + ")";
+function valueToRgb(value, minValue, maxValue) {
+
+    let inter = d3.interpolateRgb(d3.rgb(255,0,0), d3.rgb(0,0,255)); // Interpolator between red and green
+    
+
+    // Map min and max to [0,1] linearly
+    // Two point formula: x1 = minValue, x2 = maxValue, y1 = 0, y2 = 1, x = value, y = ?
+    let minmax_linear = ((1 - 0)/(maxValue - minValue))*(value - maxValue) + 1;
+
+    console.log("minvalue", minValue)
+    console.log("maxval", maxValue)
+    console.log("value", value)
+    console.log("linear", minmax_linear)
+    return inter(minmax_linear); 
+    // console.log(minmax_linear)
+    // // Two point formula: x1 = -255, x2 = 255, y1 = 0, y2 = 1, x = ?, y = minmax_linear
+    // let rgb_linear = 255*2*minmax_linear - 255
+    // // let rgb_linear = (255*2)*minmax_linear - 255;
+    // // var linear = value / maxValue * (255 * 2) - 255;
+    // if (rgb_linear >= 0){
+    //     return "rgb("+rgb_linear+", 0, 0)";
+    // } 
+    // return "rgb(0, 0, " + Math.abs(rgb_linear) + ")";
 }
