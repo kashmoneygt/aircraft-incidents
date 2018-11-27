@@ -1,3 +1,5 @@
+var injuries = ["Uninjured", "Serious Injuries", "Fatal Injuries"];
+
 function createChart3(context) {
     console.log('chart 3');
 
@@ -10,14 +12,21 @@ function createChart3(context) {
 
     let chart3svg = d3.select("#chart3svg");
 
-    let image = chart3svg.append("svg:image")
-    .attr("xlink:href", "briefcase.jpg")
-    .attr("id", "briefcase")
-    .attr("width", width)
-    .attr("height", height);
-
     console.log(width);
     console.log(height);
+
+    var x = d3.scale.ordinal()
+        .domain(injuries)
+        .rangePoints([width / 4, 3 * width / 4]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    chart3svg.append('g')
+        .attr('class', 'x axis')
+        .attr("transform", "translate(0," + (height - 25) + ")")
+        .call(xAxis);
 
     var data = context.data;
 
@@ -33,54 +42,51 @@ function createChart3(context) {
     for (injury in injuriesCount) {
         totalInjuries += injuriesCount[injury];
     }
-    
-    console.log(injuriesCount);
-    console.log(totalInjuries);
-    console.log(image);
 
-    let image_j = $("#briefcase");
-    console.log(image_j.offset());
-
-    console.log(chart3_j.offset());
-
-    var chart3Offset = chart3_j.offset();
-    var imageOffset = image_j.offset();
-    // var rect1StartX = imageOffset.left - chart3Offset.left;
-    // var rect1StartY = imageOffset.top - chart3Offset.top; 
-    var rectStartX = 135;
-    var rectStartY = 30;
-    var rectHeight = 115;
-
-    var briefCaseTotal = 183; // 185 pixels - 2 for spacing
+    let normalizedInjuries = {};
+    var circleMax = height / 2 - 30;
     for (injury in injuriesCount) {
-        injuriesCount[injury] = injuriesCount[injury] * briefCaseTotal / totalInjuries;
+        normalizedInjuries[injury] = injuriesCount[injury] * circleMax / totalInjuries;
     }
 
-    console.log(rectStartX);
-    console.log(rectStartY);
+    let circle1 = chart3svg.append("circle")
+        .attr("r", normalizedInjuries["Total_Uninjured"])
+        .attr("cx", width / 4)
+        .attr("cy", height / 2)
+        .attr("fill", "green")
+        .attr("stroke", "green")
+        .attr("stroke-width", 3)
+        .on("mouseover", function handleMouseOver(d, i) {
+            d3.select(this).attr({
+                r: this.r + 10
+            });
+            chart3svg.append("text").attr({
+                id: "hello",  // Create an id for text so we can select it later for removing on mouseout
+                x: function() { return 0; },
+                y: function() { return 0; }
+            })
+            .text(function() {
+                return "Total Uninjured: " + injuriesCount["Total_Uninjured"];  // Value of the text
+            });
+        });
 
-    let rect1 = chart3svg.append("rect")
-        .attr("width", injuriesCount["Total_Uninjured"])
-        .attr("height", rectHeight)
-        .attr("x", rectStartX)
-        .attr("y", rectStartY)
-        .attr("fill", "blue");
+    let circle2 = chart3svg.append("circle")
+        .attr("r", normalizedInjuries["Total_Serious_Injuries"])
+        .attr("cx", width / 2)
+        .attr("cy", height / 2)
+        .attr("fill", "orange")
+        .attr("stroke", "orange")
+        .attr("stroke-width", 3);
 
-    let rect2 = chart3svg.append("rect")
-        .attr("width", injuriesCount["Total_Serious_Injuries"])
-        .attr("height", rectHeight)
-        .attr("x", rectStartX + 1 + parseInt(rect1.attr("width")))
-        .attr("y", rectStartY)
-        .attr("fill", "green");
+    let circle3 = chart3svg.append("circle")
+        .attr("r", normalizedInjuries["Total_Fatal_Injuries"])
+        .attr("cx", 3 * width / 4)
+        .attr("cy", height / 2)
+        .attr("fill", "red")
+        .attr("stroke", "red")
+        .attr("stroke-width", 3);
 
-    let rect3 = chart3svg.append("rect")
-        .attr("width", injuriesCount["Total_Fatal_Injuries"])
-        .attr("height", rectHeight)
-        .attr("x", rectStartX + 2 + parseInt(rect1.attr("width")) + parseInt(rect2.attr("width")))
-        .attr("y", rectStartY)
-        .attr("fill", "red");
-
-
+    
 
 }
 

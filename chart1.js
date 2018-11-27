@@ -18,6 +18,19 @@ function createChart1(context) {
     let planeSpacingX = width / 8;
     let planeSpacingY = height / 6;
 
+    var x = d3.scale.ordinal()
+        .domain(phases)
+        .rangePoints([startPosX, startPosX + planeSpacingX * (numPhases - 1)]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    chart1svg.append('g')
+        .attr('class', 'x axis')
+        .attr("transform", "translate(0," + (height - 25) + ")")
+        .call(xAxis);
+
     for (var i = 1; i <= numPhases; i++) {
 
         if (i >= 3 && i <= 5) {
@@ -35,20 +48,6 @@ function createChart1(context) {
             .attr("d", planeAttr);
 
     }
-
-    var x = d3.scale.ordinal()
-        .domain(phases)
-        .rangePoints([30, width - 40]);
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-    chart1svg.append('g')
-        .attr('class', 'x axis')
-        .attr("transform", "translate(0," + (height - 25) + ")")
-        .call(xAxis);
-
 
     var data = context.data;
 
