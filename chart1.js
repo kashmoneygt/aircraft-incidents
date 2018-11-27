@@ -6,7 +6,7 @@ function createChart1(context) {
     let chart1_j = $("#chart1");
     let chart1svg_j = $("#chart1svg");
     let width = chart1_j.width();
-    let height = width/3; // Maintain an aspect ratio
+    let height = width/2; // Maintain an aspect ratio
     chart1svg_j.width(width); 
     chart1svg_j.height(height); 
 

@@ -1,151 +1,73 @@
-
 function createChart2(context){
     //Width and height of map
-    let width = $("#chart2").width();
-    let height = $("#chart1svg").height();
+    context.chart2width = $("#chart1").width();
+    context.chart2height = $("#chart1svg").height();
     
-    // D3 Projection
-    let projection = d3.geo.albersUsa()
-                    .translate([width/2, height/2])    // translate to center of screen
-                    .scale([1000]);          // scale things down so see entire US
-            
-    // Define path generator
-    let path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
-                .projection(projection);  // tell path generator to use albersUsa projection
 
             
-    // // Define linear scale for output
-    // let color = d3.scale.linear()
-    //             .range(["rgb(213,222,217)","rgb(69,173,168)","rgb(84,36,55)","rgb(217,91,67)"]);
 
-    // var legendText = ["Cities Lived", "States Lived", "States Visited", "Nada"];
 
-    //Create SVG element and append map to the SVG
-    let svg = d3.select("#chart2svg")
-                .attr("width", width)
-                .attr("height", height);
+    context.chart2svg = d3.select("#chart2svg")
+                .attr("width", context.chart2width)
+                .attr("height", context.chart2height);
+
             
-    // // Append Div for tooltip to SVG
-    // var div = d3.select("body")
-    //             .append("div")   
-    //             .attr("class", "tooltip")               
-    //             .style("opacity", 0);
-
-    // Load in my states data!
-    d3.csv("stateslived.csv", function(data) {
-    color.domain([0,1,2,3]); // setting the range of the input data
 
     // Load GeoJSON data and merge with states data
     d3.json("us-states.json", function(json) {
 
-    // Loop through each state data value in the .csv file
-    for (var i = 0; i < data.length; i++) {
+        context.us_state_json = json;
+        
+        updateChart2(context);
+        
 
-        // Grab State Name
-        var dataState = data[i].state;
-
-        // Grab data value 
-        var dataValue = data[i].visited;
-
-        // Find the corresponding state inside the GeoJSON
-        for (var j = 0; j < json.features.length; j++)  {
-            var jsonState = json.features[j].properties.name;
-
-            if (dataState == jsonState) {
-
-            // Copy the data value into the JSON
-            json.features[j].properties.visited = dataValue; 
-
-            // Stop looking through the JSON
-            break;
-            }
-        }
-    }
             
+    });
+}
+
+function updateChart2(context){
+
+    // D3 Projection
+    let projection = d3.geo.albersUsa()
+                    .translate([context.chart2width/2, context.chart2height/2])    // translate to center of screen
+                    .scale([600]);          // scale things down so see entire US
+
+    // Define path generator
+    let path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
+                .projection(projection);  // tell path generator to use albersUsa projection
+    
+    console.log(context.us_state_json)
     // Bind the data to the SVG and create one path per GeoJSON feature
-    svg.selectAll("path")
-        .data(json.features)
-        .enter()
-        .append("path")
-        .attr("d", path)
-        .style("stroke", "#fff")
-        .style("stroke-width", "1")
-        .style("fill", function(d) {
-
-        // Get data value
-        var value = d.properties.visited;
-
-        if (value) {
-        //If value exists…
-        return color(value);
-        } else {
-        //If value is undefined…
+    context.chart2svg.selectAll("path")
+    .data(context.us_state_json.features)
+    .enter()
+    .append("path")
+    .attr("d", path)
+    .style("stroke", "#fff")
+    .style("stroke-width", "1")
+    .style("fill", function(d) {
+        // console.log(d)
         return "rgb(213,222,217)";
-        }
     });
 
-            
-    // Map the cities I have lived in!
-    d3.csv("cities-lived.csv", function(data) {
-
-    svg.selectAll("circle")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("cx", function(d) {
-            return projection([d.lon, d.lat])[0];
-        })
-        .attr("cy", function(d) {
-            return projection([d.lon, d.lat])[1];
-        })
-        .attr("r", function(d) {
-            return Math.sqrt(d.years) * 4;
-        })
-            .style("fill", "rgb(217,91,67)")	
-            .style("opacity", 0.85)	
-
-        // Modification of custom tooltip code provided by Malcolm Maclean, "D3 Tips and Tricks" 
-        // http://www.d3noob.org/2013/01/adding-tooltips-to-d3js-graph.html
-        .on("mouseover", function(d) {      
-            div.transition()        
-            .duration(200)      
-            .style("opacity", .9);      
-            div.text(d.place)
-            .style("left", (d3.event.pageX) + "px")     
-            .style("top", (d3.event.pageY - 28) + "px");    
-        })   
-
-        // fade out tooltip on mouse out               
-        .on("mouseout", function(d) {       
-            div.transition()        
-            .duration(500)      
-            .style("opacity", 0);   
-        });
-    });  
-            
-    // Modified Legend Code from Mike Bostock: http://bl.ocks.org/mbostock/3888852
-    var legend = d3.select("body").append("svg")
-                    .attr("class", "legend")
-                    .attr("width", 140)
-                    .attr("height", 200)
-                    .selectAll("g")
-                    .data(color.domain().slice().reverse())
-                    .enter()
-                    .append("g")
-                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-        legend.append("rect")
-            .attr("width", 18)
-            .attr("height", 18)
-            .style("fill", color);
-
-        legend.append("text")
-            .data(legendText)
-            .attr("x", 24)
-            .attr("y", 9)
-            .attr("dy", ".35em")
-            .text(function(d) { return d; });
-        });
-
-    });
+    // console.log(context.data)
+    // context.chart2svg.selectAll("circle")
+    //     .data(context.data)
+    //     .enter()
+    //     .append("circle")
+    //     .attr("cx", function(d){
+    //         if(d.Country == "United States" && !isNaN(parseFloat(d.Longitude))){
+    //             console.log(d);
+    //             d.Longitude = parseFloat(d.Longitude);
+    //             d.Latitude = parseFloat(d.Latitude);
+    //             return projection([d.Longitude, d.Latitude])[0]
+    //         }
+    //     })
+    //     .attr("cy", function(d){
+    //         if(d.Country == "United States" && !isNaN(parseFloat(d.Longitude))){
+    //             return projection([d.Longitude, d.Latitude])[1]
+    //         }
+    //     })
+    //     .attr("r", 2)
+    //     .style("fill", "black")
 }

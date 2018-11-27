@@ -18,6 +18,7 @@ $( document ).ready(function() {
         context.data = data;
         createTimeBar(data);
         createChart1(context);
+        createChart2(context);
         createChart3(context);
         
 
