@@ -31,13 +31,14 @@ $( document ).ready(function() {
 
 // Updates all linked charts dependant on the time bar
 function updateVis(context){
-    console.log("Context before", context)
+    // console.log("Context before", context)
     context.data = context.original_data.filter(function(d) {
         return d.Event_Date.getFullYear() >= context.startYear && d.Event_Date.getFullYear() <= context.endYear;
     });
-    console.log("Context after", context);
+    // console.log("Context after", context);
     updateChart1(context); // Update the first chart. Pass in current context
     updateChart2(context);
+    updateChart3(context);
 }
 
 function preprocessData(d){
@@ -216,10 +217,10 @@ function valueToRgb(value, minValue, maxValue) {
     // Two point formula: x1 = minValue, x2 = maxValue, y1 = 0, y2 = 1, x = value, y = ?
     let minmax_linear = ((1 - 0)/(maxValue - minValue))*(value - maxValue) + 1;
 
-    console.log("minvalue", minValue)
-    console.log("maxval", maxValue)
-    console.log("value", value)
-    console.log("linear", minmax_linear)
+    // console.log("minvalue", minValue)
+    // console.log("maxval", maxValue)
+    // console.log("value", value)
+    // console.log("linear", minmax_linear)
     return inter(minmax_linear); 
     // console.log(minmax_linear)
     // // Two point formula: x1 = -255, x2 = 255, y1 = 0, y2 = 1, x = ?, y = minmax_linear

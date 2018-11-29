@@ -132,7 +132,7 @@ function updateChart2(context){
 
     // console.log(context.us_state_json)
     // Bind the data to the SVG and create one path per GeoJSON feature
-    console.log(state_to_accident_map);
+    // console.log(state_to_accident_map);
     context.chart2svg.selectAll("path")
     .data(context.us_state_json.features)
     .enter()
