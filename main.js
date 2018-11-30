@@ -56,11 +56,11 @@ function createTimeBar(data){
     let width = timebar_div_j.width() // Spans the whole screen
     let height = width/5; // Maintain an aspect ratio
     timebarsvg_j.width(width); 
-    timebarsvg_j.height(height); 
+    timebarsvg_j.height(height + 20); 
 
     let timechart_width = width - margin.right - margin.left;
-    let timechart_height = height - margin.top - margin.bottom
-    let timechart_left = margin.left;
+    let timechart_height = height - margin.top - margin.bottom;
+    let timechart_left = margin.left + 15;
     let timechart_right = margin.left+timechart_height;
     let timechart_top = margin.top;
     let timechart_bottom = margin.top+timechart_height;
@@ -94,7 +94,7 @@ function createTimeBar(data){
 
     let yAxis = d3.svg.axis().scale(yScale).orient('left');
     bars.append('g')
-            .attr('class', 'y_axis')
+            .attr('class', 'axis')
             .attr('transform', function(d, i){
                 let translate = [timechart_left, timechart_top];
                 return "translate("+ translate +")";
@@ -106,7 +106,7 @@ function createTimeBar(data){
 
     let xAxis = d3.svg.axis().scale(xScale).orient('bottom');
     bars.append('g')
-            .attr('class', 'x_axis')
+            .attr('class', 'x axis')
             .attr('transform', function(d, i){
                 let translate = [timechart_left, timechart_bottom];
                 return "translate("+ translate +")";
@@ -143,6 +143,21 @@ function createTimeBar(data){
                 return xScale(year)
             })
             .attr("class", "timebar");
+
+    // text label for the x axis
+    bars.append("text")             
+        .attr("transform", "translate(" + (width/2) + " ," + (height + 15) + ")")
+        .style("text-anchor", "middle")
+        .text("Years");
+
+    // text label for the y axis
+    bars.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of Incidents");   
         
 
     // define brush and limit its size

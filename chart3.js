@@ -12,7 +12,7 @@ function createChart3(context) {
     let width = chart3_j.width();
     let height = width/3; // Maintain an aspect ratio
     chart3svg_j.width(width); 
-    chart3svg_j.height(height); 
+    chart3svg_j.height(height + 20); 
 
     let chart3svg = d3.select("#chart3svg");
 
@@ -24,10 +24,25 @@ function createChart3(context) {
         .scale(x)
         .orient("bottom");
 
-    chart3svg.append('g')
+    var axis = chart3svg.append('g')
         .attr('class', 'x axis')
         .attr("transform", "translate(0," + (height - 25) + ")")
         .call(xAxis);
+
+    // text label for the x axis
+    chart3svg.append("text")             
+        .attr("transform", "translate(" + (width/2) + " ," + (height + 15) + ")")
+        .style("text-anchor", "middle")
+        .text("Type of Injury");
+
+    // text label for the y axis
+    chart3svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0)
+        .attr("x",0 - (height / 2) - 10)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of Injuries");   
 
     var data = context.data;
 
