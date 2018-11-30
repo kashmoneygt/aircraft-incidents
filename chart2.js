@@ -61,6 +61,13 @@ abbreviation_map = {
 }
 
 function createChart2(context){
+
+    c2_tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden");
+
     //Width and height of map
     context.chart2width = $("#chart1").width();
     context.chart2height = $("#chart1svg").height();
@@ -89,7 +96,9 @@ function createChart2(context){
 
 function updateChart2(context){
 
-   
+   if(context.data.length == 0){
+       return;
+   }
 
 
     let state_to_accident_map = {};
@@ -130,6 +139,7 @@ function updateChart2(context){
     let maxval = Object.values(state_to_accident_map).reduce((prev, l) => Math.max(prev, l), -Infinity)
     let minval = Object.values(state_to_accident_map).reduce((prev, l) => Math.min(prev, l), +Infinity)
 
+    context.chart2svg.selectAll(".uspath").remove();
     // console.log(context.us_state_json)
     // Bind the data to the SVG and create one path per GeoJSON feature
     // console.log(state_to_accident_map);
@@ -137,6 +147,7 @@ function updateChart2(context){
     .data(context.us_state_json.features)
     .enter()
     .append("path")
+    .attr("class", "uspath")
     .attr("d", path)
     .style("stroke", "#fff")
     .style("stroke-width", "1")
@@ -148,7 +159,18 @@ function updateChart2(context){
         console.error(fullstate_name)
     }
     return valueToRgb(state_to_accident_map[fullstate_name], minval, maxval);
-    });
+    })
+    .on("mouseover", function(d) {
+        let fullstate_name = d.properties.name;
+        // return "rgb(213,222,217)";
+        // console.log(maxval)
+        if(state_to_accident_map[fullstate_name] == undefined){
+            console.error(fullstate_name)
+        }
+        return c2_tooltip.style("visibility", "visible").style("color", "#7FFF00").text(state_to_accident_map[fullstate_name]);
+    })
+    .on("mousemove", function(){return c2_tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+    .on("mouseout", function() {return c2_tooltip.style("visibility", "hidden");});;
 
 
 }

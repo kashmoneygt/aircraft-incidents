@@ -10,7 +10,7 @@ function createChart3(context) {
     let chart3_j = $("#chart3");
     let chart3svg_j = $("#chart3svg");
     let width = chart3_j.width();
-    let height = width/3; // Maintain an aspect ratio
+    let height = width/2; // Maintain an aspect ratio
     chart3svg_j.width(width); 
     chart3svg_j.height(height + 20); 
 

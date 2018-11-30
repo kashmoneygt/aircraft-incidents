@@ -22,6 +22,7 @@ $( document ).ready(function() {
         createChart1(context);
         createChart2(context);
         createChart3(context);
+        createChart4(context);
         
 
     })
@@ -39,6 +40,7 @@ function updateVis(context){
     updateChart1(context); // Update the first chart. Pass in current context
     updateChart2(context);
     updateChart3(context);
+    updateChart4(context);  
 }
 
 function preprocessData(d){
@@ -223,7 +225,7 @@ function brushend(){
 
 }
 
-function valueToRgb(value, minValue, maxValue) {
+function valueToRgb(value, maxValue, minValue) {
 
     let inter = d3.interpolateRgb(d3.rgb(255,0,0), d3.rgb(0,0,255)); // Interpolator between red and green
     
