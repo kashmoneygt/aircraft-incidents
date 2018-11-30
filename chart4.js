@@ -87,7 +87,7 @@ function updateChart4(context){
                 .attr("class", "slice")
                 .on("mouseover", function(d) {
                     
-                    return c2_tooltip.style("visibility", "visible").style("color", "#7FFF00").text(d.data.actual);
+                    return c2_tooltip.style("visibility", "visible").style("color", "#7FFF00").text(Math.round((d.data.value*100)*100)/100+ "% (" + d.data.actual+")");
                 })
                 .on("mousemove", function(){return c2_tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
                 .on("mouseout", function() {return c2_tooltip.style("visibility", "hidden");});    //allow us to style things in the slices (like text)
